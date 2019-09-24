@@ -1,5 +1,5 @@
 from mongoengine import Document, StringField, IntField, BooleanField, \
-    ReferenceField, FloatField, ListField, FileField
+    ReferenceField, FloatField, ListField
 
 
 class Category(Document):

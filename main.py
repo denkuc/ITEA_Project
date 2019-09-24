@@ -6,6 +6,7 @@ from common import get_module, get_id, Modules, get_user, \
     delete_last_message
 from config import SHOP_URL
 from models.product import Category, Product
+from models.cart import Cart, OrdersHistory
 from models.texts import Texts
 from models.user import User
 
