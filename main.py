@@ -93,7 +93,7 @@ def show_cart(message):
         remove_keyboard = InlineKeyboardMarkup()
         remove_button = InlineKeyboardButton(
             text=Texts.get_text('remove_product', user.language),
-            callback_data='rmproduct_' + str(product.id)
+            callback_data=f'{Modules.REMOVE_PRODUCT}_{product.id}'
         )
         remove_keyboard.add(remove_button)
         bot.send_message(message.chat.id,
@@ -103,7 +103,7 @@ def show_cart(message):
     submit_keyboard = InlineKeyboardMarkup()
     submit_button = InlineKeyboardButton(
         text=Texts.get_text('submit', user.language),
-        callback_data='submit'
+        callback_data=Modules.SUBMIT
     )
     submit_keyboard.add(submit_button)
     bot.send_message(message.chat.id,
@@ -189,8 +189,9 @@ def products_by_cat(call):
     func=lambda call: Modules.get_module(call) == Modules.PRODUCT)
 def product(call):
     product = Product.objects.get(id=Modules.get_id(call))
-    discount = ' -{}%' if product.discount else ''
-    price = f'\n{product.price}{discount}' if product.price is not None else ''
+    discount = f' -{product.discount}%' if product.is_discount else ''
+    price = f'\n{product.price} грн. {discount}' if product.price is not None \
+        else ''
     product_text = f'*{product.title}*{price}'
     bot.send_message(call.message.chat.id,
                      text=product_text,
@@ -202,7 +203,9 @@ def product(call):
 def add_to_card(call):
     Cart.create_or_append_to_cart(product_id=Modules.get_id(call),
                                   user_id=call.message.chat.id)
-    cart = Cart.objects.all().first()
+    bot.send_message(call.message.chat.id,
+                     text='✅',
+                     parse_mode='MARKDOWN')
 
 
 @bot.callback_query_handler(

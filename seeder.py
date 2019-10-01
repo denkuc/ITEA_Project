@@ -2,8 +2,6 @@ from mongoengine import connect
 
 from models.texts import Texts
 
-connect('bot_shop')
-
 
 def seed_texts():
     texts_dict = {
@@ -44,6 +42,5 @@ def seed_texts():
 
 if __name__ == '__main__':
     connect("bot_shop")
-    # seed_products(50, 10)
     seed_texts()
 

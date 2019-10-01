@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, uniform
 
 from mongoengine import connect
 
@@ -101,12 +101,12 @@ def setup_product_info():
         except:
             product_obj.availability = False
             product_obj.quantity = 0
-        product_obj.weight = random.uniform(0, 100)
-        product_obj.height = random.uniform(0, 100)
-        product_obj.width = random.uniform(0, 100)
+        product_obj.weight = uniform(0, 100)
+        product_obj.height = uniform(0, 100)
+        product_obj.width = uniform(0, 100)
         product_obj.save()
 
 
 if __name__ == '__main__':
-    create_categories()
-    # setup_product_info()
+    # create_categories()
+    setup_product_info()

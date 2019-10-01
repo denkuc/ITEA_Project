@@ -26,7 +26,7 @@ class Cart(Document):
             user_cart.products.append(product)
             user_cart.save()
         else:
-            cls(dict(user_id=user_id, products=[product])).save()
+            return cls({'user_id': int(user_id), 'products': [product]})
 
     def clean_cart(self):
         self.products = []
