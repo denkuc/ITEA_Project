@@ -1,12 +1,11 @@
-from conda._vendor.auxlib.entity import IntegerField
-from mongoengine import Document, BooleanField, ReferenceField, ListField
+from mongoengine import Document, BooleanField, ReferenceField, ListField, IntField
 
 from models.product import Product
 from models.user import User
 
 
 class Cart(Document):
-    user_id = IntegerField()
+    user_id = IntField()
     products = ListField(ReferenceField(Product))
     is_archived = BooleanField(default=False)
 
