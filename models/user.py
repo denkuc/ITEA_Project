@@ -6,10 +6,19 @@ from mongoengine import Document, StringField, IntField
 
 
 class User(Document):
-    telegram_id = IntField(max_value=9999999999999)
-    name = StringField(max_length=255)
-    surname = StringField(max_length=255)
-    nickname = StringField(max_length=255)
-    user_state = IntField(min_value=0)
-    language = StringField(max_length=2)
-    # user_cart = ReferenceField(Cart)
+    user_id = IntField()
+    name = StringField()
+    surname = StringField()
+    nickname = StringField()
+    user_state = IntField()
+
+    @classmethod
+    def get_or_create_user(cls, message):
+        user = cls.objects.filter(user_id=message.from_user.id).first()
+        if user:
+            return user
+        else:
+            return cls(user_id=message.from_user.id,
+                       name=message.from_user.first_name,
+                       surname=message.from_user.last_name,
+                       nickname=message.from_user.username).save()
