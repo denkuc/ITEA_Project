@@ -6,6 +6,8 @@ from mongoengine import Document, StringField, IntField
 
 
 class User(Document):
+    telegram_id = IntField(max_value=9999999999999)
+    language = StringField(max_length=2)
     user_id = IntField()
     name = StringField()
     surname = StringField()
