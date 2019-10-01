@@ -1,6 +1,3 @@
-from models.user import User
-
-
 class Modules:
     CATEGORY = 'category'
     SUBCATEGORY = 'subcategory'
@@ -16,10 +13,6 @@ class Modules:
     @classmethod
     def get_id(cls, call):
         return call.data.split('_')[1]
-
-    @classmethod
-    def get_user(cls, message) -> User:
-        return User.objects(telegram_id=message.chat.id).first()
 
 
 def delete_last_message(bot, call):

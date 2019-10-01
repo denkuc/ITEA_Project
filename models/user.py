@@ -6,9 +6,8 @@ from mongoengine import Document, StringField, IntField
 
 
 class User(Document):
-    telegram_id = IntField(max_value=9999999999999)
+    user_id = IntField(max_value=9999999999999)
     language = StringField(max_length=2)
-    user_id = IntField()
     name = StringField()
     surname = StringField()
     nickname = StringField()
@@ -21,6 +20,7 @@ class User(Document):
             return user
         else:
             return cls(user_id=message.from_user.id,
+                       language=message.from_user.language_code,
                        name=message.from_user.first_name,
                        surname=message.from_user.last_name,
                        nickname=message.from_user.username).save()

@@ -1,5 +1,6 @@
 import time
 
+from bson import ObjectId
 from flask import Flask, request, abort
 from telebot import TeleBot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, \
@@ -38,36 +39,30 @@ UA_MENU = ["Категорії", "Новини", "Інформація для п
 
 @bot.message_handler(commands=['start'])
 def greetings(message):
-    user_id = message.chat.id
-    user = Modules.get_user(message)
-    if not user:
-        user = User()
-        user.telegram_id = user_id
-        user.language = message.from_user.language_code
-        user.save()
+    user = User.get_or_create_user(message)
 
     if user.language == 'ru':
         main_menu_keyboard.add(*RU_MENU)
     else:
         main_menu_keyboard.add(*UA_MENU)
 
-    bot.send_message(user_id,
+    bot.send_message(user.user_id,
                      text=Texts.get_text('greetings', user.language),
                      reply_markup=main_menu_keyboard)
 
 
 @bot.message_handler(func=lambda m: m.text in START_KEYBOARD['news'])
 def news(message):
-    user = Modules.get_user(message)
-    bot.send_message(user.telegram_id,
+    user = User.get_or_create_user(message)
+    bot.send_message(user.user_id,
                      Texts.get_text('news', user.language),
                      reply_markup=main_menu_keyboard)
 
 
 @bot.message_handler(func=lambda m: m.text in START_KEYBOARD['info'])
 def info(message):
-    user = Modules.get_user(message)
-    bot.send_message(user.telegram_id,
+    user = User.get_or_create_user(message)
+    bot.send_message(user.user_id,
                      Texts.get_text('information_for_user', user.language),
                      reply_markup=main_menu_keyboard)
 
@@ -79,7 +74,7 @@ def categories_from_menu(message):
 
 @bot.message_handler(func=lambda message: message.text == START_KEYBOARD['cart'])
 def show_cart(message):
-    user = Modules.get_user(message)
+    user = User.get_or_create_user(message)
     current_user = User.objects.get(user_id=message.chat.id)
     cart = Cart.objects.filter(user=current_user, is_archived=False).first()
 
@@ -122,7 +117,7 @@ def categories_from_inline(call):
 
 
 def categories_common(message):
-    user = Modules.get_user(message)
+    user = User.get_or_create_user(message)
     categories_keyboard = InlineKeyboardMarkup(row_width=2)
     categories_objects = Category.objects(main=True)
 
@@ -136,7 +131,7 @@ def categories_common(message):
                                             callback_data=callback_data))
 
     categories_keyboard.add(*buttons)
-    bot.send_message(user.telegram_id,
+    bot.send_message(user.user_id,
                      text=Texts.get_text('categories', user.language),
                      reply_markup=categories_keyboard)
 
@@ -144,7 +139,7 @@ def categories_common(message):
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.CATEGORY)
 def subcategories_by_cat(call):
-    user = Modules.get_user(call.message)
+    user = User.get_or_create_user(call.message)
     delete_last_message(bot, call)
     category = Category.objects.get(id=Modules.get_id(call))
     subcategories = category.sub_categories
@@ -163,7 +158,7 @@ def subcategories_by_cat(call):
         text=Texts.get_text('back_to_categories', user.language),
         callback_data=f'{Modules.CATEGORY}'
     ))
-    bot.send_message(user.telegram_id,
+    bot.send_message(user.user_id,
                      text=Texts.get_text('subcategory', user.language),
                      reply_markup=subcategories_kb)
 
@@ -171,7 +166,7 @@ def subcategories_by_cat(call):
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.SUBCATEGORY)
 def products_by_cat(call):
-    user = Modules.get_user(call.message)
+    user = User.get_or_create_user(call.message)
     category = Category.objects.filter(id=Modules.get_id(call)).first()
     products = category.category_products[:5]
     for product in products:
@@ -183,7 +178,7 @@ def products_by_cat(call):
             InlineKeyboardButton(
                 text=Texts.get_text('more_info', user.language),
                 callback_data=f'{Modules.PRODUCT}_{product.id}'))
-        bot.send_photo(user.telegram_id,
+        bot.send_photo(user.user_id,
                        photo=SHOP_URL+product.image_url,
                        caption=product.title,
                        reply_markup=keyboard)
@@ -211,16 +206,16 @@ def add_to_card(call):
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.REMOVE_PRODUCT)
 def rm_product_from_cart(call):
-    current_user = User.objects.get(user_id=call.message.chat.id)
-    cart = Cart.objects.get(user=current_user)
-    cart.update(pull__products=Modules.get_id(call))
+    user = User.get_or_create_user(call.message)
+    cart = Cart.objects.get(user=user)
+    cart.update(pull__products=ObjectId(Modules.get_id(call)))
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.SUBMIT)
 def submit_cart(call):
-    user = Modules.get_user(call.message)
+    user = User.get_or_create_user(call.message)
     current_user = User.objects.get(user_id=call.message.chat.id)
     cart = Cart.objects.filter(user=current_user, is_archived=False).first()
     cart.is_archived = True
