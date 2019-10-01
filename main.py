@@ -131,7 +131,7 @@ def categories_common(message):
                                             callback_data=callback_data))
 
     categories_keyboard.add(*buttons)
-    bot.send_message(user.user_id,
+    bot.send_message(message.chat.id,
                      text=Texts.get_text('categories', user.language),
                      reply_markup=categories_keyboard)
 
@@ -158,7 +158,7 @@ def subcategories_by_cat(call):
         text=Texts.get_text('back_to_categories', user.language),
         callback_data=f'{Modules.CATEGORY}'
     ))
-    bot.send_message(user.user_id,
+    bot.send_message(call.message.chat.id,
                      text=Texts.get_text('subcategory', user.language),
                      reply_markup=subcategories_kb)
 
@@ -178,7 +178,7 @@ def products_by_cat(call):
             InlineKeyboardButton(
                 text=Texts.get_text('more_info', user.language),
                 callback_data=f'{Modules.PRODUCT}_{product.id}'))
-        bot.send_photo(user.user_id,
+        bot.send_photo(call.message.chat.id,
                        photo=SHOP_URL+product.image_url,
                        caption=product.title,
                        reply_markup=keyboard)
