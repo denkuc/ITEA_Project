@@ -76,7 +76,8 @@ def categories_from_menu(message):
 def show_cart(message):
     user = User.get_or_create_user(message)
     current_user = User.objects.get(user_id=message.chat.id)
-    cart = Cart.objects.filter(user=current_user, is_archived=False).first()
+    cart = Cart.objects.filter(user_id=current_user.user_id,
+                               is_archived=False).first()
 
     if not cart:
         bot.send_message(message.chat.id,
@@ -199,9 +200,8 @@ def product(call):
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.ADD_TO_CART)
 def add_to_card(call):
-    current_user = User.objects.get(user_id=call.message.chat.id)
     Cart.create_or_append_to_cart(product_id=Modules.get_id(call),
-                                  user_id=current_user.user_id)
+                                  user_id=call.message.chat.id)
     cart = Cart.objects.all().first()
 
 
