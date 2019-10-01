@@ -1,23 +1,25 @@
 from models.user import User
 
 
-def get_module(call):
-    return call.data.split('_')[0]
-
-
-def get_id(call):
-    return call.data.split('_')[1]
-
-
 class Modules:
     CATEGORY = 'category'
     SUBCATEGORY = 'subcategory'
     PRODUCT = 'product'
     ADD_TO_CART = 'addtocart'
+    SUBMIT = 'submit'
+    REMOVE_PRODUCT = 'rmproduct'
 
+    @classmethod
+    def get_module(cls, call):
+        return call.data.split('_')[0]
 
-def get_user(message) -> User:
-    return User.objects(telegram_id=message.chat.id).first()
+    @classmethod
+    def get_id(cls, call):
+        return call.data.split('_')[1]
+
+    @classmethod
+    def get_user(cls, message) -> User:
+        return User.objects(telegram_id=message.chat.id).first()
 
 
 def delete_last_message(bot, call):

@@ -1,5 +1,4 @@
-from mongoengine import Document, StringField, IntField, BooleanField, \
-    ReferenceField, ListField
+from mongoengine import Document, BooleanField, ReferenceField, ListField
 
 from models.product import Product
 from models.user import User
