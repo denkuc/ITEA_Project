@@ -2,7 +2,7 @@ import config
 
 API_TOKEN = config.TOKEN
 
-WEBHOOK_HOST = 'https://35.246.132.163/'
+WEBHOOK_HOST = '35.246.132.163'
 WEBHOOK_PORT = 80  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 

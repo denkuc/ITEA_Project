@@ -1,6 +1,5 @@
 import time
 
-from bson import ObjectId
 from flask import Flask, request, abort
 from telebot import TeleBot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, \
@@ -214,7 +213,7 @@ def add_to_card(call):
 def rm_product_from_cart(call):
     current_user = User.objects.get(user_id=call.message.chat.id)
     cart = Cart.objects.get(user=current_user)
-    cart.update(pull__products=ObjectId(Modules.get_id(call)))
+    cart.update(pull__products=Modules.get_id(call))
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 
