@@ -188,8 +188,9 @@ def products_by_cat(call):
     func=lambda call: Modules.get_module(call) == Modules.PRODUCT)
 def product(call):
     product = Product.objects.get(id=Modules.get_id(call))
-    discount = '-{}%' if product.discount else ''
-    product_text = f'*{product.title}*\n_{product.price}_ {discount}'
+    discount = ' -{}%' if product.discount else ''
+    price = f'\n{product.price}{discount}' if product.price is not None else ''
+    product_text = f'*{product.title}*{price}'
     bot.send_message(call.message.chat.id,
                      text=product_text,
                      parse_mode='MARKDOWN')
@@ -198,8 +199,9 @@ def product(call):
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.ADD_TO_CART)
 def add_to_card(call):
+    current_user = User.objects.get(user_id=call.message.chat.id)
     Cart.create_or_append_to_cart(product_id=Modules.get_id(call),
-                                  user_id=call.message.chat.id)
+                                  user_id=current_user.user_id)
     cart = Cart.objects.all().first()
 
 
