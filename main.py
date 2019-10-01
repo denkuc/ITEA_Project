@@ -72,7 +72,7 @@ def categories_from_menu(message):
     categories_common(message)
 
 
-@bot.message_handler(func=lambda message: message.text == START_KEYBOARD['cart'])
+@bot.message_handler(func=lambda m: m.text in START_KEYBOARD['cart'])
 def show_cart(message):
     user = User.get_or_create_user(message)
     current_user = User.objects.get(user_id=message.chat.id)
@@ -231,17 +231,17 @@ def submit_cart(call):
 
 
 bot.remove_webhook()
-bot.polling()
-#
-#
-# time.sleep(1)
-#
-# # Set webhook
-# bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-#                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
-#
-# # Start flask server
-# app.run(host=WEBHOOK_LISTEN,
-#         port=WEBHOOK_PORT,
-#         ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
-#         debug=True)
+# bot.polling()
+
+
+time.sleep(1)
+
+# Set webhook
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+
+# Start flask server
+app.run(host=WEBHOOK_LISTEN,
+        port=WEBHOOK_PORT,
+        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+        debug=True)
