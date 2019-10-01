@@ -211,8 +211,7 @@ def add_to_card(call):
 @bot.callback_query_handler(
     func=lambda call: Modules.get_module(call) == Modules.REMOVE_PRODUCT)
 def rm_product_from_cart(call):
-    user = User.get_or_create_user(call.message)
-    cart = Cart.objects.get(user=user)
+    cart = Cart.objects.filter(user_id=call.message.chat.id).first()
     cart.update(pull__products=ObjectId(Modules.get_id(call)))
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
@@ -222,7 +221,8 @@ def rm_product_from_cart(call):
 def submit_cart(call):
     user = User.get_or_create_user(call.message)
     current_user = User.objects.get(user_id=call.message.chat.id)
-    cart = Cart.objects.filter(user=current_user, is_archived=False).first()
+    cart = Cart.objects.filter(user_id=current_user.user_id,
+                               is_archived=False).first()
     cart.is_archived = True
 
     order_history = OrdersHistory.get_or_create(current_user)
