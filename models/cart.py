@@ -1,3 +1,4 @@
+from conda._vendor.auxlib.entity import IntegerField
 from mongoengine import Document, BooleanField, ReferenceField, ListField
 
 from models.product import Product
@@ -5,7 +6,7 @@ from models.user import User
 
 
 class Cart(Document):
-    user = ReferenceField(User, required=True)
+    user_id = IntegerField()
     products = ListField(ReferenceField(Product))
     is_archived = BooleanField(default=False)
 
@@ -27,7 +28,7 @@ class Cart(Document):
             user_cart.products.append(product)
             user_cart.save()
         else:
-            cls(dict(user=user, products=[product])).save()
+            cls(dict(user_id=user.user_id, products=[product])).save()
 
     def clean_cart(self):
         self.products = []

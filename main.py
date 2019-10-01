@@ -231,15 +231,17 @@ def submit_cart(call):
 
 
 bot.remove_webhook()
-
-time.sleep(1)
-
-# Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
-
-# Start flask server
-app.run(host=WEBHOOK_LISTEN,
-        port=WEBHOOK_PORT,
-        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
-        debug=True)
+bot.polling()
+#
+#
+# time.sleep(1)
+#
+# # Set webhook
+# bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+#                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
+#
+# # Start flask server
+# app.run(host=WEBHOOK_LISTEN,
+#         port=WEBHOOK_PORT,
+#         ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+#         debug=True)
