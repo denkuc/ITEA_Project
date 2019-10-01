@@ -5,6 +5,7 @@ class Modules:
     ADD_TO_CART = 'addtocart'
     SUBMIT = 'submit'
     REMOVE_PRODUCT = 'rmproduct'
+    CHANGE_LANGUAGE = 'changelang'
 
     @classmethod
     def get_module(cls, call):

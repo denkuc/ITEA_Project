@@ -33,8 +33,9 @@ def webhook():
 
 main_menu_keyboard = ReplyKeyboardMarkup(one_time_keyboard=True,
                                          resize_keyboard=True)
-RU_MENU = ["Категории", "Новости", "Информация для покупателя", "Корзина"]
-UA_MENU = ["Категорії", "Новини", "Інформація для покупця", "Корзина"]
+RU_MENU = ["Категории", "Новости", "Информация для покупателя", "Корзина",
+           "Язык"]
+UA_MENU = ["Категорії", "Новини", "Інформація для покупця", "Корзина", "Мова"]
 
 
 @bot.message_handler(commands=['start'])
@@ -65,6 +66,33 @@ def info(message):
     bot.send_message(user.user_id,
                      Texts.get_text('information_for_user', user.language),
                      reply_markup=main_menu_keyboard)
+
+
+@bot.message_handler(func=lambda m: m.text in START_KEYBOARD['language'])
+def language(message):
+    user = User.get_or_create_user(message)
+    inline_keyboard = InlineKeyboardMarkup()
+    inline_keyboard.add(
+        InlineKeyboardButton(
+            text="Русский 🇷🇺",
+            callback_data=f'{Modules.CHANGE_LANGUAGE}_ru'),
+        InlineKeyboardButton(
+            text="Українська 🇺🇦",
+            callback_data=f'{Modules.CHANGE_LANGUAGE}_ua'),
+    )
+    bot.send_message(message.chat.id,
+                     Texts.get_text('change_language', user.language),
+                     reply_markup=inline_keyboard)
+
+
+@bot.callback_query_handler(
+    func=lambda call: Modules.get_module(call) == Modules.CHANGE_LANGUAGE)
+def categories_from_inline(call):
+    user = User.get_or_create_user(call.message)
+    user.language = Modules.get_id(call)
+    user.save()
+    bot.send_message(call.message.chat.id,
+                     Texts.get_text('done', user.language))
 
 
 @bot.message_handler(func=lambda m: m.text in START_KEYBOARD['categories'])
