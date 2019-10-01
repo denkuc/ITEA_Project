@@ -19,15 +19,14 @@ class Cart(Document):
 
     @classmethod
     def create_or_append_to_cart(cls, product_id, user_id):
-        user = User.objects.get(user_id=user_id)
-        user_cart = cls.objects.filter(user=user).first()
+        user_cart = cls.objects.filter(user_id=user_id).first()
         product = Product.objects.get(id=product_id)
 
         if user_cart and not user_cart.is_archived:
             user_cart.products.append(product)
             user_cart.save()
         else:
-            cls(dict(user_id=user.user_id, products=[product])).save()
+            cls(dict(user_id=user_id, products=[product])).save()
 
     def clean_cart(self):
         self.products = []
